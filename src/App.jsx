@@ -8,7 +8,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import { Notification } from "./components/notification"; // Import the Notification component
+import { Notification } from "./components/notification";
+import { useField } from "./hooks";
 
 const padding = {
   paddingRight: 5,
@@ -91,53 +92,71 @@ const Footer = () => (
 const CreateNew = (props) => {
   const navigation = useNavigate();
 
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
-  const [info, setInfo] = useState("");
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
+ 
 
   const handleSubmit = (e) => {
     e.preventDefault();
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0,
     });
     navigation('/');
   };
 
-  return (
-    <div>
-      <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          content
-          <input
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-        </div>
-        <div>
-          author
-          <input
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
-        </div>
-        <div>
-          url for more info
-          <input
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-          />
-        </div>
-        <button type="submit">create</button>
-      </form>
-    </div>
-  );
+return (
+  <div onSubmit={handleSubmit}>
+    <form>
+      Content:
+      <input {...content} />
+      <br />
+      Author:
+      <input {...author} />
+      <br />
+      Url for more info:
+      <input {...info} />
+      <br />
+      <button type="submit">Create</button>
+    </form>
+  </div>
+)
+
+  // return (
+  //   <div>
+  //     <h2>create a new anecdote</h2>
+  //     <form onSubmit={handleSubmit}>
+  //       <div>
+  //         content
+  //         <input
+  //           name="content"
+  //           value={content}
+  //           onChange={(e) => setContent(e.target.value)}
+  //         />
+  //       </div>
+  //       <div>
+  //         author
+  //         <input
+  //           name="author"
+  //           value={author}
+  //           onChange={(e) => setAuthor(e.target.value)}
+  //         />
+  //       </div>
+  //       <div>
+  //         url for more info
+  //         <input
+  //           name="info"
+  //           value={info}
+  //           onChange={(e) => setInfo(e.target.value)}
+  //         />
+  //       </div>
+  //       <button type="submit">create</button>
+  //     </form>
+  //   </div>
+  // );
 };
 
 const App = () => {
@@ -161,6 +180,8 @@ const App = () => {
   const [notification, setNotification] = useState("");
   const [isVisible, setIsVisible] = useState(false);
 
+  const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
+
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
@@ -173,7 +194,7 @@ const App = () => {
     }, 5000);
   };
 
-  const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
+ 
 
   return (
     <Router>
