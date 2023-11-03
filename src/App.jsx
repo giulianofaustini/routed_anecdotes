@@ -18,7 +18,9 @@ const padding = {
 const AnecdoteList = ({ anecdotes, notification, isVisible }) => (
   <div>
     <h2>Anecdotes</h2>
-    {notification && isVisible && <Notification notification={notification} isVisible={isVisible} /> }
+    {notification && isVisible && (
+      <Notification notification={notification} isVisible={isVisible} />
+    )}
     <ul>
       {anecdotes.map((anecdote) => (
         <li key={anecdote.id}>
@@ -92,10 +94,9 @@ const Footer = () => (
 const CreateNew = (props) => {
   const navigation = useNavigate();
 
-  const content = useField('text')
-  const author = useField('text')
-  const info = useField('text')
- 
+  const content = useField("text");
+  const author = useField("text");
+  const info = useField("text");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -105,25 +106,36 @@ const CreateNew = (props) => {
       info: info.value,
       votes: 0,
     });
-    navigation('/');
+    navigation("/");
   };
 
-return (
-  <div onSubmit={handleSubmit}>
-    <form>
-      Content:
-      <input {...content} />
-      <br />
-      Author:
-      <input {...author} />
-      <br />
-      Url for more info:
-      <input {...info} />
-      <br />
-      <button type="submit">Create</button>
-    </form>
-  </div>
-)
+  const handleReset = () => {
+    content.onReset()
+    author.onReset()
+    info.onReset()
+  }
+
+  return (
+    <div onSubmit={handleSubmit}>
+      <form>
+        Content:
+        <input {...content} />
+        <br />
+        Author:
+        <input {...author} />
+        <br />
+        Url for more info:
+        <input {...info} />
+        <br />
+        <div>
+        <button type="submit">Create</button>
+        </div>
+        <div>
+        <button type="button" onClick={handleReset}>Reset </button>
+        </div>     
+      </form>
+    </div>
+  );
 
   // return (
   //   <div>
@@ -186,15 +198,13 @@ const App = () => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
     setNotification(`Anecdote ${anecdote.content} has been added`);
-    setIsVisible(true); 
+    setIsVisible(true);
 
     setTimeout(() => {
       setNotification("");
       setIsVisible(false);
     }, 5000);
   };
-
- 
 
   return (
     <Router>
@@ -212,8 +222,20 @@ const App = () => {
         </Link>
       </div>
       <Routes>
-        <Route path="/" element={<AnecdoteList anecdotes={anecdotes} notification={notification} isVisible={isVisible} />} />
-        <Route path="/anecdotes/:id" element={<Anecdote anecdotes={anecdotes} />} />
+        <Route
+          path="/"
+          element={
+            <AnecdoteList
+              anecdotes={anecdotes}
+              notification={notification}
+              isVisible={isVisible}
+            />
+          }
+        />
+        <Route
+          path="/anecdotes/:id"
+          element={<Anecdote anecdotes={anecdotes} />}
+        />
         <Route path="/about" element={<About />} />
         <Route path="/createNew" element={<CreateNew addNew={addNew} />} />
       </Routes>
@@ -223,5 +245,3 @@ const App = () => {
 };
 
 export default App;
-
-
