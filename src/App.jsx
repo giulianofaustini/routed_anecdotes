@@ -8,13 +8,16 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import { Notification } from "./components/notification"; // Import the Notification component
+
 const padding = {
   paddingRight: 5,
 };
 
-const AnecdoteList = ({ anecdotes }) => (
+const AnecdoteList = ({ anecdotes, notification, isVisible }) => (
   <div>
     <h2>Anecdotes</h2>
+    {notification && isVisible && <Notification notification={notification} isVisible={isVisible} /> }
     <ul>
       {anecdotes.map((anecdote) => (
         <li key={anecdote.id}>
@@ -31,11 +34,20 @@ const Anecdote = ({ anecdotes }) => {
   return (
     <div>
       <div>
-      <h2>{anecdote.content}</h2>
+        <h2>{anecdote.content}</h2>
       </div>
-      <div><em>votes: </em>{anecdote.votes}</div>
-      <div><em>author: </em>{anecdote.author}</div>
-      <div><em>info: </em>{anecdote.info}</div>
+      <div>
+        <em>votes: </em>
+        {anecdote.votes}
+      </div>
+      <div>
+        <em>author: </em>
+        {anecdote.author}
+      </div>
+      <div>
+        <em>info: </em>
+        {anecdote.info}
+      </div>
     </div>
   );
 };
@@ -77,6 +89,8 @@ const Footer = () => (
 );
 
 const CreateNew = (props) => {
+  const navigation = useNavigate();
+
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
@@ -89,6 +103,7 @@ const CreateNew = (props) => {
       info,
       votes: 0,
     });
+    navigation('/');
   };
 
   return (
@@ -119,7 +134,7 @@ const CreateNew = (props) => {
             onChange={(e) => setInfo(e.target.value)}
           />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
       </form>
     </div>
   );
@@ -144,24 +159,21 @@ const App = () => {
   ]);
 
   const [notification, setNotification] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+    setNotification(`Anecdote ${anecdote.content} has been added`);
+    setIsVisible(true); 
+
+    setTimeout(() => {
+      setNotification("");
+      setIsVisible(false);
+    }, 5000);
   };
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
-
-  const vote = (id) => {
-    const anecdote = anecdoteById(id);
-
-    const voted = {
-      ...anecdote,
-      votes: anecdote.votes + 1,
-    };
-
-    setAnecdotes(anecdotes.map((a) => (a.id === id ? voted : a)));
-  };
 
   return (
     <Router>
@@ -179,7 +191,7 @@ const App = () => {
         </Link>
       </div>
       <Routes>
-        <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+        <Route path="/" element={<AnecdoteList anecdotes={anecdotes} notification={notification} isVisible={isVisible} />} />
         <Route path="/anecdotes/:id" element={<Anecdote anecdotes={anecdotes} />} />
         <Route path="/about" element={<About />} />
         <Route path="/createNew" element={<CreateNew addNew={addNew} />} />
@@ -190,3 +202,5 @@ const App = () => {
 };
 
 export default App;
+
+
